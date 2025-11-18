@@ -100,7 +100,7 @@ export default function Home() {
    - 营养均衡度
    - 创意指数
 
-请用简洁专业的语言回答，分段说明。`;
+请用简洁专业的语言回答，分段说明。如果这道菜的搭配不合理或不建议制作，请明确指出问题所在。`;
 
       let analysisText = '';
 
@@ -121,7 +121,25 @@ export default function Home() {
           setIsGeneratingImage(true);
           toast.info('文字分析完成，正在生成菜品图片...', { duration: 3000 });
           
-          const imagePrompt = `一道精美的${cookingMethod}菜品，食材包括${ingredientsList}，摆盘精致，美食摄影，高清，专业灯光`;
+          // 判断评价是否为负面
+          const negativeKeywords = [
+            '不建议', '不推荐', '不合理', '不搭配', '不协调', '不适合',
+            '奇怪', '怪异', '难以', '失败', '糟糕', '不好', '不佳',
+            '问题', '风险', '注意', '谨慎', '避免', '不宜'
+          ];
+          
+          const isNegative = negativeKeywords.some(keyword => 
+            analysisText.toLowerCase().includes(keyword)
+          );
+
+          let imagePrompt = '';
+          if (isNegative) {
+            // 负面评价：生成抽象、简单的图片
+            imagePrompt = `一道${cookingMethod}的菜品，食材${ingredientsList}，简单摆盘，家常风格，自然光线，普通拍摄`;
+          } else {
+            // 正面评价：生成精美的图片
+            imagePrompt = `一道精美的${cookingMethod}菜品，食材包括${ingredientsList}，摆盘精致，美食摄影，高清，专业灯光`;
+          }
 
           try {
             const taskId = await generateDishImage(imagePrompt);
