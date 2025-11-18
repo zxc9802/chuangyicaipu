@@ -35,6 +35,7 @@ export default function Home() {
   const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(null);
   const [currentAnalysis, setCurrentAnalysis] = useState('');
   const [imageProgress, setImageProgress] = useState(0);
+  const [isGeneratingImage, setIsGeneratingImage] = useState(false);
 
   const addIngredient = () => {
     setIngredients([...ingredients, { id: Date.now().toString(), name: '' }]);
@@ -82,6 +83,7 @@ export default function Home() {
     setAnalysisResult(null);
     setCurrentAnalysis('');
     setImageProgress(0);
+    setIsGeneratingImage(false);
 
     try {
       const ingredientsList = validIngredients.map(item => item.name).join('、');
@@ -116,6 +118,9 @@ export default function Home() {
           setCurrentAnalysis(content);
         },
         onComplete: async () => {
+          setIsGeneratingImage(true);
+          toast.info('文字分析完成，正在生成菜品图片...', { duration: 3000 });
+          
           const imagePrompt = `一道精美的${cookingMethod}菜品，食材包括${ingredientsList}，摆盘精致，美食摄影，高清，专业灯光`;
 
           try {
@@ -131,8 +136,10 @@ export default function Home() {
               imageUrl: imageUrl
             });
 
+            setIsGeneratingImage(false);
             toast.success('分析完成！');
           } catch (error: any) {
+            setIsGeneratingImage(false);
             toast.error(error.message || '图片生成失败');
             setAnalysisResult({
               taste: analysisText.split('\n')[0] || analysisText,
@@ -161,6 +168,7 @@ export default function Home() {
     setAnalysisResult(null);
     setCurrentAnalysis('');
     setImageProgress(0);
+    setIsGeneratingImage(false);
   };
 
   return (
@@ -317,7 +325,7 @@ export default function Home() {
                 </div>
               )}
 
-              {isAnalyzing && imageProgress > 0 && (
+              {isGeneratingImage && (
                 <div className="space-y-2">
                   <div className="flex items-center justify-between text-sm">
                     <span className="text-muted-foreground">正在生成菜品图片...</span>
