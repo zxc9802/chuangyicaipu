@@ -116,6 +116,7 @@ export default function Home() {
           setCurrentAnalysis(content);
         },
         onComplete: async () => {
+          console.log('AI分析完成，开始生成图片');
           setIsGeneratingImage(true);
           toast.info('文字分析完成，正在生成菜品图片...', { duration: 3000 });
           
@@ -130,6 +131,8 @@ export default function Home() {
             analysisText.toLowerCase().includes(keyword)
           );
 
+          console.log('评价是否为负面:', isNegative);
+
           let imagePrompt = '';
           if (isNegative) {
             // 负面评价：生成抽象、简单的图片
@@ -139,8 +142,11 @@ export default function Home() {
             imagePrompt = `一道精美的${cookingMethod}菜品，食材包括${ingredientsList}，摆盘精致，美食摄影，高清，专业灯光，细节丰富`;
           }
 
+          console.log('图片生成prompt:', imagePrompt);
+
           try {
             const imageUrl = await generateDishImage(imagePrompt);
+            console.log('图片生成成功，URL长度:', imageUrl.length);
 
             setAnalysisResult({
               taste: analysisText.split('\n')[0] || analysisText,
@@ -151,6 +157,7 @@ export default function Home() {
             setIsGeneratingImage(false);
             toast.success('分析完成！');
           } catch (error: any) {
+            console.error('图片生成失败:', error);
             setIsGeneratingImage(false);
             toast.error(error.message || '图片生成失败');
             setAnalysisResult({
