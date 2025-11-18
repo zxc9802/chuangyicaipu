@@ -172,190 +172,209 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-background py-6 px-4">
-      <div className="max-w-2xl mx-auto space-y-6">
-        <div className="text-center space-y-2">
-          <div className="flex items-center justify-center gap-2">
-            <ChefHat className="w-8 h-8 text-primary" />
-            <h1 className="text-3xl max-sm:text-2xl font-bold text-foreground">创意食谱</h1>
+    <div className="min-h-screen bg-background py-8 xl:py-12 px-4 xl:px-8">
+      <div className="max-w-7xl mx-auto space-y-8">
+        <div className="text-center space-y-4">
+          <div className="flex items-center justify-center gap-3">
+            <ChefHat className="w-12 h-12 xl:w-16 xl:h-16 text-primary" />
+            <h1 className="text-4xl xl:text-6xl font-bold text-foreground">创意食谱</h1>
           </div>
-          <p className="text-muted-foreground text-sm">输入食材和烹饪方式，AI帮你预测菜品味道</p>
+          <p className="text-muted-foreground text-lg xl:text-xl">输入食材和烹饪方式，AI帮你预测菜品味道并生成精美效果图</p>
         </div>
 
-        <Card className="shadow-[var(--shadow-elegant)]">
-          <CardHeader>
-            <CardTitle className="text-lg flex items-center gap-2">
-              <Sparkles className="w-5 h-5 text-primary" />
-              食材配方
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <div className="space-y-3">
-              <Label className="text-base font-medium">食材</Label>
-              {ingredients.map((ingredient, index) => (
-                <div key={ingredient.id} className="flex gap-2">
-                  <Input
-                    placeholder={`食材 ${index + 1}`}
-                    value={ingredient.name}
-                    onChange={(e) => updateIngredient(ingredient.id, e.target.value)}
-                    className="flex-1"
-                  />
-                  {ingredients.length > 1 && (
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      onClick={() => removeIngredient(ingredient.id)}
-                      className="min-w-[44px] min-h-[44px]"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
-                  )}
-                </div>
-              ))}
-              <Button
-                variant="outline"
-                onClick={addIngredient}
-                className="w-full min-h-[44px]"
-              >
-                <Plus className="w-4 h-4 mr-2" />
-                添加食材
-              </Button>
-            </div>
-
-            <div className="space-y-3">
-              <Label className="text-base font-medium">佐料及用量</Label>
-              {seasonings.map((seasoning, index) => (
-                <div key={seasoning.id} className="flex gap-2">
-                  <Input
-                    placeholder={`佐料 ${index + 1}`}
-                    value={seasoning.name}
-                    onChange={(e) => updateSeasoning(seasoning.id, 'name', e.target.value)}
-                    className="flex-1"
-                  />
-                  <Input
-                    placeholder="用量"
-                    value={seasoning.amount}
-                    onChange={(e) => updateSeasoning(seasoning.id, 'amount', e.target.value)}
-                    className="w-24"
-                  />
-                  {seasonings.length > 1 && (
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      onClick={() => removeSeasoning(seasoning.id)}
-                      className="min-w-[44px] min-h-[44px]"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
-                  )}
-                </div>
-              ))}
-              <Button
-                variant="outline"
-                onClick={addSeasoning}
-                className="w-full min-h-[44px]"
-              >
-                <Plus className="w-4 h-4 mr-2" />
-                添加佐料
-              </Button>
-            </div>
-
-            <div className="space-y-3">
-              <Label className="text-base font-medium">烹饪方式</Label>
-              <Select value={cookingMethod} onValueChange={setCookingMethod}>
-                <SelectTrigger className="min-h-[44px]">
-                  <SelectValue placeholder="选择烹饪方式" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="炒">炒</SelectItem>
-                  <SelectItem value="煮">煮</SelectItem>
-                  <SelectItem value="炸">炸</SelectItem>
-                  <SelectItem value="蒸">蒸</SelectItem>
-                  <SelectItem value="烤">烤</SelectItem>
-                  <SelectItem value="炖">炖</SelectItem>
-                  <SelectItem value="煎">煎</SelectItem>
-                  <SelectItem value="焖">焖</SelectItem>
-                  <SelectItem value="拌">拌</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="flex gap-3 pt-2">
-              <Button
-                onClick={handleAnalyze}
-                disabled={isAnalyzing}
-                className="flex-1 min-h-[48px] text-base"
-              >
-                {isAnalyzing ? (
-                  <>
-                    <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                    分析中...
-                  </>
-                ) : (
-                  <>
-                    <Sparkles className="w-5 h-5 mr-2" />
-                    开始分析
-                  </>
-                )}
-              </Button>
-              <Button
-                variant="outline"
-                onClick={handleReset}
-                disabled={isAnalyzing}
-                className="min-h-[48px]"
-              >
-                重置
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-
-        {(currentAnalysis || analysisResult) && (
-          <Card className="shadow-[var(--shadow-elegant)] animate-fade-in">
+        <div className="grid xl:grid-cols-2 gap-8">
+          <Card className="shadow-[var(--shadow-elegant)] xl:sticky xl:top-8 xl:self-start">
             <CardHeader>
-              <CardTitle className="text-lg flex items-center gap-2">
-                <ChefHat className="w-5 h-5 text-primary" />
-                AI 分析结果
+              <CardTitle className="text-2xl flex items-center gap-2">
+                <Sparkles className="w-6 h-6 text-primary" />
+                食材配方
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
-              {currentAnalysis && (
-                <div className="prose prose-sm max-w-none">
-                  <Streamdown>{currentAnalysis}</Streamdown>
-                </div>
-              )}
-
-              {isGeneratingImage && (
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-muted-foreground">正在生成菜品图片...</span>
-                    <span className="text-primary font-medium">{imageProgress}%</span>
-                  </div>
-                  <div className="w-full h-2 bg-secondary rounded-full overflow-hidden">
-                    <div
-                      className="h-full bg-primary transition-all duration-300"
-                      style={{ width: `${imageProgress}%` }}
+            <CardContent className="space-y-6">
+              <div className="space-y-4">
+                <Label className="text-lg font-medium">食材</Label>
+                {ingredients.map((ingredient, index) => (
+                  <div key={ingredient.id} className="flex gap-3">
+                    <Input
+                      placeholder={`食材 ${index + 1}`}
+                      value={ingredient.name}
+                      onChange={(e) => updateIngredient(ingredient.id, e.target.value)}
+                      className="flex-1 h-12 text-base"
                     />
+                    {ingredients.length > 1 && (
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        onClick={() => removeIngredient(ingredient.id)}
+                        className="min-w-[48px] min-h-[48px]"
+                      >
+                        <Trash2 className="w-5 h-5" />
+                      </Button>
+                    )}
                   </div>
-                </div>
-              )}
+                ))}
+                <Button
+                  variant="outline"
+                  onClick={addIngredient}
+                  className="w-full min-h-[48px] text-base"
+                >
+                  <Plus className="w-5 h-5 mr-2" />
+                  添加食材
+                </Button>
+              </div>
 
-              {analysisResult?.imageUrl && (
-                <div className="space-y-2">
-                  <Label className="text-base font-medium">菜品效果图</Label>
-                  <div className="rounded-lg overflow-hidden border border-border">
-                    <img
-                      src={analysisResult.imageUrl}
-                      alt="菜品效果图"
-                      crossOrigin="anonymous"
-                      className="w-full h-auto"
+              <div className="space-y-4">
+                <Label className="text-lg font-medium">佐料及用量</Label>
+                {seasonings.map((seasoning, index) => (
+                  <div key={seasoning.id} className="flex gap-3">
+                    <Input
+                      placeholder={`佐料 ${index + 1}`}
+                      value={seasoning.name}
+                      onChange={(e) => updateSeasoning(seasoning.id, 'name', e.target.value)}
+                      className="flex-1 h-12 text-base"
                     />
+                    <Input
+                      placeholder="用量"
+                      value={seasoning.amount}
+                      onChange={(e) => updateSeasoning(seasoning.id, 'amount', e.target.value)}
+                      className="w-32 h-12 text-base"
+                    />
+                    {seasonings.length > 1 && (
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        onClick={() => removeSeasoning(seasoning.id)}
+                        className="min-w-[48px] min-h-[48px]"
+                      >
+                        <Trash2 className="w-5 h-5" />
+                      </Button>
+                    )}
                   </div>
-                </div>
-              )}
+                ))}
+                <Button
+                  variant="outline"
+                  onClick={addSeasoning}
+                  className="w-full min-h-[48px] text-base"
+                >
+                  <Plus className="w-5 h-5 mr-2" />
+                  添加佐料
+                </Button>
+              </div>
+
+              <div className="space-y-4">
+                <Label className="text-lg font-medium">烹饪方式</Label>
+                <Select value={cookingMethod} onValueChange={setCookingMethod}>
+                  <SelectTrigger className="min-h-[48px] text-base">
+                    <SelectValue placeholder="选择烹饪方式" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="炒">炒</SelectItem>
+                    <SelectItem value="煮">煮</SelectItem>
+                    <SelectItem value="炸">炸</SelectItem>
+                    <SelectItem value="蒸">蒸</SelectItem>
+                    <SelectItem value="烤">烤</SelectItem>
+                    <SelectItem value="炖">炖</SelectItem>
+                    <SelectItem value="煎">煎</SelectItem>
+                    <SelectItem value="焖">焖</SelectItem>
+                    <SelectItem value="拌">拌</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="flex gap-4 pt-4">
+                <Button
+                  onClick={handleAnalyze}
+                  disabled={isAnalyzing}
+                  className="flex-1 min-h-[56px] text-lg"
+                >
+                  {isAnalyzing ? (
+                    <>
+                      <Loader2 className="w-6 h-6 mr-2 animate-spin" />
+                      分析中...
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles className="w-6 h-6 mr-2" />
+                      开始分析
+                    </>
+                  )}
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={handleReset}
+                  disabled={isAnalyzing}
+                  className="min-h-[56px] px-8 text-lg"
+                >
+                  重置
+                </Button>
+              </div>
             </CardContent>
           </Card>
-        )}
+
+          <div className="space-y-8">
+            {(currentAnalysis || analysisResult) && (
+              <Card className="shadow-[var(--shadow-elegant)] animate-fade-in">
+                <CardHeader>
+                  <CardTitle className="text-2xl flex items-center gap-2">
+                    <ChefHat className="w-6 h-6 text-primary" />
+                    AI 分析结果
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  {currentAnalysis && (
+                    <div className="prose prose-base max-w-none text-base leading-relaxed">
+                      <Streamdown>{currentAnalysis}</Streamdown>
+                    </div>
+                  )}
+
+                  {isGeneratingImage && (
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between text-base">
+                        <span className="text-muted-foreground font-medium">正在生成菜品图片...</span>
+                        <span className="text-primary font-bold text-lg">{imageProgress}%</span>
+                      </div>
+                      <div className="w-full h-3 bg-secondary rounded-full overflow-hidden">
+                        <div
+                          className="h-full bg-primary transition-all duration-300"
+                          style={{ width: `${imageProgress}%` }}
+                        />
+                      </div>
+                    </div>
+                  )}
+
+                  {analysisResult?.imageUrl && (
+                    <div className="space-y-3">
+                      <Label className="text-lg font-medium">菜品效果图</Label>
+                      <div className="rounded-xl overflow-hidden border-2 border-border shadow-lg">
+                        <img
+                          src={analysisResult.imageUrl}
+                          alt="菜品效果图"
+                          crossOrigin="anonymous"
+                          className="w-full h-auto"
+                        />
+                      </div>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            )}
+
+            {!currentAnalysis && !analysisResult && (
+              <Card className="shadow-[var(--shadow-elegant)] border-dashed">
+                <CardContent className="py-16 xl:py-24">
+                  <div className="text-center space-y-4">
+                    <ChefHat className="w-20 h-20 xl:w-24 xl:h-24 mx-auto text-muted-foreground opacity-50" />
+                    <p className="text-muted-foreground text-lg xl:text-xl">
+                      输入食材信息后，点击"开始分析"按钮
+                      <br />
+                      AI将为您生成专业的菜品分析和效果图
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );
