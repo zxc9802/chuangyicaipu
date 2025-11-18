@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { toast } from 'sonner';
 import { ChefHat, Plus, Trash2, Sparkles, Loader2 } from 'lucide-react';
 import { sendChatStream } from '@/services/chat';
-import { generateDishImage, pollImageResult } from '@/services/image';
+import { generateDishImage } from '@/services/image';
 import { Streamdown } from 'streamdown';
 
 interface Ingredient {
@@ -34,7 +34,6 @@ export default function Home() {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(null);
   const [currentAnalysis, setCurrentAnalysis] = useState('');
-  const [imageProgress, setImageProgress] = useState(0);
   const [isGeneratingImage, setIsGeneratingImage] = useState(false);
 
   const addIngredient = () => {
@@ -82,7 +81,6 @@ export default function Home() {
     setIsAnalyzing(true);
     setAnalysisResult(null);
     setCurrentAnalysis('');
-    setImageProgress(0);
     setIsGeneratingImage(false);
 
     try {
@@ -135,18 +133,14 @@ export default function Home() {
           let imagePrompt = '';
           if (isNegative) {
             // 负面评价：生成抽象、简单的图片
-            imagePrompt = `一道${cookingMethod}的菜品，食材${ingredientsList}，简单摆盘，家常风格，自然光线，普通拍摄`;
+            imagePrompt = `一道${cookingMethod}的菜品，食材${ingredientsList}，简单摆盘，家常风格，自然光线，普通拍摄，抽象风格`;
           } else {
             // 正面评价：生成精美的图片
-            imagePrompt = `一道精美的${cookingMethod}菜品，食材包括${ingredientsList}，摆盘精致，美食摄影，高清，专业灯光`;
+            imagePrompt = `一道精美的${cookingMethod}菜品，食材包括${ingredientsList}，摆盘精致，美食摄影，高清，专业灯光，细节丰富`;
           }
 
           try {
-            const taskId = await generateDishImage(imagePrompt);
-            
-            const imageUrl = await pollImageResult(taskId, (progress) => {
-              setImageProgress(Math.round(progress * 100));
-            });
+            const imageUrl = await generateDishImage(imagePrompt);
 
             setAnalysisResult({
               taste: analysisText.split('\n')[0] || analysisText,
@@ -185,7 +179,6 @@ export default function Home() {
     setCookingMethod('');
     setAnalysisResult(null);
     setCurrentAnalysis('');
-    setImageProgress(0);
     setIsGeneratingImage(false);
   };
 
@@ -347,15 +340,9 @@ export default function Home() {
 
                   {isGeneratingImage && (
                     <div className="space-y-3">
-                      <div className="flex items-center justify-between text-base">
-                        <span className="text-muted-foreground font-medium">正在生成菜品图片...</span>
-                        <span className="text-primary font-bold text-lg">{imageProgress}%</span>
-                      </div>
-                      <div className="w-full h-3 bg-secondary rounded-full overflow-hidden">
-                        <div
-                          className="h-full bg-primary transition-all duration-300"
-                          style={{ width: `${imageProgress}%` }}
-                        />
+                      <div className="flex items-center justify-center gap-3 py-8">
+                        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+                        <span className="text-muted-foreground font-medium text-lg">正在生成菜品图片，请稍候...</span>
                       </div>
                     </div>
                   )}
