@@ -1,14 +1,17 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { toast } from 'sonner';
-import { ChefHat, Plus, Trash2, Sparkles, Loader2 } from 'lucide-react';
+import { ChefHat, Plus, Trash2, Sparkles, Loader2, Share2, Download } from 'lucide-react';
 import { sendChatStream } from '@/services/chat';
 import { generateDishImage } from '@/services/image';
 import { Streamdown } from 'streamdown';
+import html2canvas from 'html2canvas';
+import ShareCard from '@/components/ShareCard';
 
 interface Ingredient {
   id: string;
@@ -35,6 +38,9 @@ export default function Home() {
   const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(null);
   const [currentAnalysis, setCurrentAnalysis] = useState('');
   const [isGeneratingImage, setIsGeneratingImage] = useState(false);
+  const [isGeneratingShareCard, setIsGeneratingShareCard] = useState(false);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const shareCardRef = useRef<HTMLDivElement>(null);
 
   const addIngredient = () => {
     setIngredients([...ingredients, { id: Date.now().toString(), name: '' }]);
@@ -187,6 +193,38 @@ export default function Home() {
     setAnalysisResult(null);
     setCurrentAnalysis('');
     setIsGeneratingImage(false);
+  };
+
+  const handleGenerateShareCard = async () => {
+    if (!shareCardRef.current) return;
+
+    setIsGeneratingShareCard(true);
+    toast.info('正在生成打卡图片...', { duration: 2000 });
+
+    try {
+      const canvas = await html2canvas(shareCardRef.current, {
+        scale: 2,
+        useCORS: true,
+        allowTaint: true,
+        backgroundColor: '#FFF8F0',
+        logging: false
+      });
+
+      const dataUrl = canvas.toDataURL('image/png');
+      
+      const link = document.createElement('a');
+      link.download = `创意食谱打卡-${new Date().getTime()}.png`;
+      link.href = dataUrl;
+      link.click();
+
+      toast.success('打卡图片已生成并下载！');
+      setIsDialogOpen(false);
+    } catch (error) {
+      console.error('生成打卡图片失败:', error);
+      toast.error('生成打卡图片失败，请重试');
+    } finally {
+      setIsGeneratingShareCard(false);
+    }
   };
 
   return (
@@ -365,6 +403,50 @@ export default function Home() {
                           className="w-full h-auto"
                         />
                       </div>
+                      
+                      {/* 生成打卡图片按钮 */}
+                      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                        <DialogTrigger asChild>
+                          <Button className="w-full min-h-[56px] text-lg" variant="default">
+                            <Share2 className="w-6 h-6 mr-2" />
+                            生成打卡图片
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+                          <DialogHeader>
+                            <DialogTitle className="text-2xl">打卡图片预览</DialogTitle>
+                          </DialogHeader>
+                          <div className="space-y-4">
+                            <div className="flex justify-center bg-muted p-4 rounded-lg">
+                              <ShareCard
+                                ref={shareCardRef}
+                                ingredients={ingredients.filter(i => i.name.trim()).map(i => i.name)}
+                                seasonings={seasonings.filter(s => s.name.trim())}
+                                cookingMethod={cookingMethod}
+                                evaluation={analysisResult.evaluation}
+                                imageUrl={analysisResult.imageUrl}
+                              />
+                            </div>
+                            <Button
+                              onClick={handleGenerateShareCard}
+                              disabled={isGeneratingShareCard}
+                              className="w-full min-h-[56px] text-lg"
+                            >
+                              {isGeneratingShareCard ? (
+                                <>
+                                  <Loader2 className="w-6 h-6 mr-2 animate-spin" />
+                                  生成中...
+                                </>
+                              ) : (
+                                <>
+                                  <Download className="w-6 h-6 mr-2" />
+                                  下载打卡图片
+                                </>
+                              )}
+                            </Button>
+                          </div>
+                        </DialogContent>
+                      </Dialog>
                     </div>
                   )}
                 </CardContent>
