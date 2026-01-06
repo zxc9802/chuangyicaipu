@@ -412,9 +412,9 @@ export default function Home() {
                             生成打卡图片
                           </Button>
                         </DialogTrigger>
-                        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+                        <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
                           <DialogHeader>
-                            <DialogTitle className="text-2xl">打卡图片预览</DialogTitle>
+                            <DialogTitle className="text-xl">打卡图片预览</DialogTitle>
                           </DialogHeader>
                           <div className="space-y-4">
                             <div className="flex justify-center bg-muted p-4 rounded-lg">
@@ -423,23 +423,22 @@ export default function Home() {
                                 ingredients={ingredients.filter(i => i.name.trim()).map(i => i.name)}
                                 seasonings={seasonings.filter(s => s.name.trim())}
                                 cookingMethod={cookingMethod}
-                                evaluation={analysisResult.evaluation}
                                 imageUrl={analysisResult.imageUrl}
                               />
                             </div>
                             <Button
                               onClick={handleGenerateShareCard}
                               disabled={isGeneratingShareCard}
-                              className="w-full min-h-[56px] text-lg"
+                              className="w-full min-h-[48px] text-base"
                             >
                               {isGeneratingShareCard ? (
                                 <>
-                                  <Loader2 className="w-6 h-6 mr-2 animate-spin" />
+                                  <Loader2 className="w-5 h-5 mr-2 animate-spin" />
                                   生成中...
                                 </>
                               ) : (
                                 <>
-                                  <Download className="w-6 h-6 mr-2" />
+                                  <Download className="w-5 h-5 mr-2" />
                                   下载打卡图片
                                 </>
                               )}
