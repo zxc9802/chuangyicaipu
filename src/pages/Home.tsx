@@ -6,7 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { toast } from 'sonner';
-import { ChefHat, Plus, Trash2, Sparkles, Loader2, Share2, Download } from 'lucide-react';
+import { ChefHat, Plus, Trash2, Sparkles, Loader2, Share2, Download, Star } from 'lucide-react';
 import { sendChatStream } from '@/services/chat';
 import { generateDishImage } from '@/services/image';
 import { Streamdown } from 'streamdown';
@@ -28,6 +28,7 @@ interface AnalysisResult {
   taste: string;
   evaluation: string;
   imageUrl: string;
+  rating: number; // 1-5星评分
 }
 
 export default function Home() {
@@ -103,6 +104,14 @@ export default function Home() {
    - 口味搭配合理性
    - 营养均衡度
    - 创意指数
+3. 最后给出综合评价星级（1-5星），格式为"综合评分：X星"
+
+评分标准：
+- 5星：搭配完美，营养均衡，创意十足
+- 4星：搭配合理，营养良好，有一定创意
+- 3星：搭配尚可，营养一般，创意平平
+- 2星：搭配欠佳，营养不足，缺乏创意
+- 1星：搭配不合理，不建议制作
 
 请用简洁专业的语言回答，分段说明。如果这道菜的搭配不合理或不建议制作，请明确指出问题所在。`;
 
@@ -126,25 +135,27 @@ export default function Home() {
           setIsGeneratingImage(true);
           toast.info('文字分析完成，正在生成菜品图片...', { duration: 3000 });
           
-          // 判断评价是否为负面
-          const negativeKeywords = [
-            '不建议', '不推荐', '不合理', '不搭配', '不协调', '不适合',
-            '奇怪', '怪异', '难以', '失败', '糟糕', '不好', '不佳',
-            '问题', '风险', '注意', '谨慎', '避免', '不宜'
-          ];
-          
-          const isNegative = negativeKeywords.some(keyword => 
-            analysisText.toLowerCase().includes(keyword)
-          );
+          // 解析星级评分
+          const ratingMatch = analysisText.match(/综合评分[：:]\s*([1-5])\s*星/);
+          const rating = ratingMatch ? parseInt(ratingMatch[1]) : 3; // 默认3星
+          console.log('解析到的星级:', rating);
 
-          console.log('评价是否为负面:', isNegative);
-
+          // 根据星级生成不同风格的图片prompt
           let imagePrompt = '';
-          if (isNegative) {
-            // 负面评价：生成抽象、简单的图片
-            imagePrompt = `一道${cookingMethod}的菜品，食材${ingredientsList}，简单摆盘，家常风格，自然光线，普通拍摄，抽象风格`;
+          if (rating === 1) {
+            // 1星：夸张抽象的动漫风格
+            imagePrompt = `一道${cookingMethod}的菜品，食材${ingredientsList}，夸张的抽象风格，动漫画风，卡通风格，搞笑效果，色彩鲜艳`;
+          } else if (rating === 2) {
+            // 2星：简单家常风格
+            imagePrompt = `一道${cookingMethod}的菜品，食材${ingredientsList}，简单摆盘，家常风格，自然光线，普通拍摄`;
+          } else if (rating === 3) {
+            // 3星：普通摄影风格
+            imagePrompt = `一道${cookingMethod}的菜品，食材${ingredientsList}，普通摆盘，日常风格，自然光线`;
+          } else if (rating === 4) {
+            // 4星：精美摄影风格
+            imagePrompt = `一道精美的${cookingMethod}菜品，食材包括${ingredientsList}，摆盘精致，美食摄影，高清`;
           } else {
-            // 正面评价：生成精美的图片
+            // 5星：专业美食摄影
             imagePrompt = `一道精美的${cookingMethod}菜品，食材包括${ingredientsList}，摆盘精致，美食摄影，高清，专业灯光，细节丰富`;
           }
 
@@ -157,7 +168,8 @@ export default function Home() {
             setAnalysisResult({
               taste: analysisText.split('\n')[0] || analysisText,
               evaluation: analysisText,
-              imageUrl: imageUrl
+              imageUrl: imageUrl,
+              rating: rating
             });
 
             setIsGeneratingImage(false);
@@ -169,7 +181,8 @@ export default function Home() {
             setAnalysisResult({
               taste: analysisText.split('\n')[0] || analysisText,
               evaluation: analysisText,
-              imageUrl: ''
+              imageUrl: '',
+              rating: rating
             });
           } finally {
             setIsAnalyzing(false);
@@ -377,6 +390,28 @@ export default function Home() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6">
+                  {/* 星级评分显示 */}
+                  {analysisResult?.rating && (
+                    <div className="flex items-center justify-center gap-2 p-4 bg-muted rounded-lg">
+                      <span className="text-lg font-medium text-foreground">综合评分：</span>
+                      <div className="flex items-center gap-1">
+                        {[1, 2, 3, 4, 5].map((star) => (
+                          <Star
+                            key={star}
+                            className={`w-6 h-6 ${
+                              star <= analysisResult.rating
+                                ? 'fill-[#FF8C42] text-[#FF8C42]'
+                                : 'text-muted-foreground'
+                            }`}
+                          />
+                        ))}
+                      </div>
+                      <span className="text-lg font-bold text-primary">
+                        {analysisResult.rating} 星
+                      </span>
+                    </div>
+                  )}
+
                   {currentAnalysis && (
                     <div className="prose prose-base max-w-none text-base leading-relaxed">
                       <Streamdown>{currentAnalysis}</Streamdown>
@@ -424,6 +459,7 @@ export default function Home() {
                                 seasonings={seasonings.filter(s => s.name.trim())}
                                 cookingMethod={cookingMethod}
                                 imageUrl={analysisResult.imageUrl}
+                                rating={analysisResult.rating}
                               />
                             </div>
                             <Button

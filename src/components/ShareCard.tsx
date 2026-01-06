@@ -1,15 +1,16 @@
 import { forwardRef } from 'react';
-import { ChefHat } from 'lucide-react';
+import { ChefHat, Star } from 'lucide-react';
 
 interface ShareCardProps {
   ingredients: string[];
   seasonings: Array<{ name: string; amount: string }>;
   cookingMethod: string;
   imageUrl: string;
+  rating: number;
 }
 
 const ShareCard = forwardRef<HTMLDivElement, ShareCardProps>(
-  ({ ingredients, seasonings, cookingMethod, imageUrl }, ref) => {
+  ({ ingredients, seasonings, cookingMethod, imageUrl, rating }, ref) => {
     return (
       <div
         ref={ref}
@@ -23,6 +24,21 @@ const ShareCard = forwardRef<HTMLDivElement, ShareCardProps>(
             <h1 className="text-2xl font-bold text-[#333333]">创意食谱</h1>
           </div>
           <p className="text-sm text-[#666666]">我的美食创意打卡</p>
+          
+          {/* 星级评分 */}
+          <div className="flex items-center justify-center gap-1 mt-3">
+            {[1, 2, 3, 4, 5].map((star) => (
+              <Star
+                key={star}
+                className={`w-5 h-5 ${
+                  star <= rating
+                    ? 'fill-[#FF8C42] text-[#FF8C42]'
+                    : 'text-[#CCCCCC]'
+                }`}
+              />
+            ))}
+            <span className="ml-2 text-base font-bold text-[#FF8C42]">{rating} 星</span>
+          </div>
         </div>
 
         {/* 配方信息卡片 */}
