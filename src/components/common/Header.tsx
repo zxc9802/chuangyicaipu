@@ -1,7 +1,7 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/context/AuthContext';
-import { ChefHat, History, LogOut, User } from 'lucide-react';
+import { History, LogOut, User } from 'lucide-react';
 import { toast } from 'sonner';
 
 export default function Header() {
@@ -21,18 +21,11 @@ export default function Header() {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-16 items-center px-4">
+      <div className="container flex h-16 items-center justify-end px-4">
         {/* 导航和用户信息 */}
         <div className="flex items-center gap-4">
           {user ? (
             <>
-              <Link to="/">
-                <Button variant="ghost" size="sm">
-                  <ChefHat className="w-4 h-4 mr-2" />
-                  创建食谱
-                </Button>
-              </Link>
-              
               <Link to="/history">
                 <Button variant="ghost" size="sm">
                   <History className="w-4 h-4 mr-2" />
