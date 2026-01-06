@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { toast } from 'sonner';
-import { ChefHat, Star, Trash2, Calendar, Loader2 } from 'lucide-react';
+import { Star, Trash2, Calendar, Loader2, Home } from 'lucide-react';
 import { supabase } from '@/db/supabase';
 import { useAuth } from '@/context/AuthContext';
 
@@ -25,6 +26,7 @@ export default function History() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const { user } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
     loadRecipes();
@@ -97,23 +99,30 @@ export default function History() {
   return (
     <div className="min-h-screen bg-background py-8 px-4">
       <div className="max-w-6xl mx-auto space-y-6">
-        {/* 标题 */}
-        <div className="text-center">
-          <h1 className="text-4xl font-bold mb-2 flex items-center justify-center gap-3">
-            <ChefHat className="w-10 h-10 text-primary" />
-            我的食谱历史
-          </h1>
-          <p className="text-muted-foreground text-lg">查看你的美食创意记录</p>
+        {/* 标题和返回按钮 */}
+        <div className="flex items-center justify-between">
+          <h1 className="text-4xl font-bold">我的食谱历史</h1>
+          <Button onClick={() => navigate('/')} size="lg">
+            <Home className="w-5 h-5 mr-2" />
+            返回首页
+          </Button>
         </div>
+        <p className="text-muted-foreground text-lg text-center">查看你的美食创意记录</p>
 
         {/* 历史记录列表 */}
         {recipes.length === 0 ? (
           <Card className="shadow-[var(--shadow-elegant)]">
             <CardContent className="py-20">
               <div className="text-center space-y-4">
-                <ChefHat className="w-20 h-20 mx-auto text-muted-foreground opacity-50" />
+                <div className="w-20 h-20 mx-auto rounded-full bg-muted flex items-center justify-center">
+                  <Home className="w-10 h-10 text-muted-foreground" />
+                </div>
                 <p className="text-muted-foreground text-lg">还没有任何食谱记录</p>
                 <p className="text-muted-foreground">快去创建你的第一个美食创意吧！</p>
+                <Button onClick={() => navigate('/')} size="lg" className="mt-4">
+                  <Home className="w-5 h-5 mr-2" />
+                  前往首页创建
+                </Button>
               </div>
             </CardContent>
           </Card>
