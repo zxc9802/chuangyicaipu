@@ -12,6 +12,8 @@ import { generateDishImage } from '@/services/image';
 import { Streamdown } from 'streamdown';
 import html2canvas from 'html2canvas';
 import ShareCard from '@/components/ShareCard';
+import { supabase } from '@/db/supabase';
+import { useAuth } from '@/context/AuthContext';
 
 interface Ingredient {
   id: string;
@@ -42,6 +44,7 @@ export default function Home() {
   const [isGeneratingShareCard, setIsGeneratingShareCard] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const shareCardRef = useRef<HTMLDivElement>(null);
+  const { user } = useAuth();
 
   const addIngredient = () => {
     setIngredients([...ingredients, { id: Date.now().toString(), name: '' }]);
@@ -165,12 +168,17 @@ export default function Home() {
             const imageUrl = await generateDishImage(imagePrompt);
             console.log('图片生成成功，URL长度:', imageUrl.length);
 
-            setAnalysisResult({
+            const result = {
               taste: analysisText.split('\n')[0] || analysisText,
               evaluation: analysisText,
               imageUrl: imageUrl,
               rating: rating
-            });
+            };
+
+            setAnalysisResult(result);
+
+            // 保存到历史记录
+            await saveToHistory(result);
 
             setIsGeneratingImage(false);
             toast.success('分析完成！');
@@ -178,12 +186,18 @@ export default function Home() {
             console.error('图片生成失败:', error);
             setIsGeneratingImage(false);
             toast.error(error.message || '图片生成失败');
-            setAnalysisResult({
+            
+            const result = {
               taste: analysisText.split('\n')[0] || analysisText,
               evaluation: analysisText,
               imageUrl: '',
               rating: rating
-            });
+            };
+            
+            setAnalysisResult(result);
+            
+            // 即使图片生成失败，也保存到历史记录
+            await saveToHistory(result);
           } finally {
             setIsAnalyzing(false);
           }
@@ -206,6 +220,34 @@ export default function Home() {
     setAnalysisResult(null);
     setCurrentAnalysis('');
     setIsGeneratingImage(false);
+  };
+
+  const saveToHistory = async (result: AnalysisResult) => {
+    if (!user) {
+      console.log('用户未登录，跳过保存历史记录');
+      return;
+    }
+
+    try {
+      const validIngredients = ingredients.filter(i => i.name.trim()).map(i => i.name);
+      const validSeasonings = seasonings.filter(s => s.name.trim());
+
+      const { error } = await supabase.from('recipes').insert({
+        user_id: user.id,
+        ingredients: validIngredients,
+        seasonings: validSeasonings,
+        cooking_method: cookingMethod,
+        evaluation: result.evaluation,
+        rating: result.rating,
+        image_url: result.imageUrl || null,
+      });
+
+      if (error) throw error;
+      console.log('历史记录保存成功');
+    } catch (error: any) {
+      console.error('保存历史记录失败:', error);
+      // 不显示错误提示，静默失败
+    }
   };
 
   const handleGenerateShareCard = async () => {

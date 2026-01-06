@@ -1,51 +1,70 @@
-import React, { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
-import routes from "../../routes";
+import { Link, useNavigate } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
+import { useAuth } from '@/context/AuthContext';
+import { ChefHat, History, LogOut, User } from 'lucide-react';
+import { toast } from 'sonner';
 
-const Header: React.FC = () => {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const location = useLocation();
-  const navigation = routes.filter((route) => route.visible !== false);
+export default function Header() {
+  const { user, profile, signOut } = useAuth();
+  const navigate = useNavigate();
+
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+      toast.success('已退出登录');
+      navigate('/login');
+    } catch (error: any) {
+      console.error('退出登录失败:', error);
+      toast.error('退出登录失败');
+    }
+  };
 
   return (
-    <header className="bg-white shadow-md sticky top-0 z-10">
-      <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between h-16">
-          <div className="flex items-center">
-            <Link to="/" className="flex-shrink-0 flex items-center">
-              {/* Please replace with your website logo */}
-              <img
-                className="h-8 w-auto"
-                src={`https://miaoda-site-img.cdn.bcebos.com/placeholder/code_logo_default.png`}
-                alt="Website logo"
-              />
-              {/* Please replace with your website name */}
-              <span className="ml-2 text-xl font-bold text-blue-600">
-                Website Name
-              </span>
-            </Link>
-          </div>
+    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <div className="container flex h-16 items-center justify-between px-4">
+        {/* Logo */}
+        <Link to="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
+          <ChefHat className="w-8 h-8 text-primary" />
+          <span className="text-xl font-bold">创意食谱</span>
+        </Link>
 
-          {/* When there's only one page, you can remove the entire navigation section */}
-          <div className="hidden md:flex items-center space-x-8">
-            {navigation.map((item) => (
-              <Link
-                key={item.path}
-                to={item.path}
-                className={`px-3 py-2 text-base font-medium rounded-md ${
-                  location.pathname === item.path
-                    ? "text-blue-600 bg-blue-50"
-                    : "text-gray-700 hover:text-blue-600 hover:bg-gray-50"
-                } transition duration-300`}
-              >
-                {item.name}
+        {/* 导航和用户信息 */}
+        <div className="flex items-center gap-4">
+          {user ? (
+            <>
+              <Link to="/history">
+                <Button variant="ghost" size="sm">
+                  <History className="w-4 h-4 mr-2" />
+                  历史记录
+                </Button>
               </Link>
-            ))}
-          </div>
+              
+              <div className="flex items-center gap-2 px-3 py-1.5 bg-muted rounded-full">
+                <User className="w-4 h-4 text-muted-foreground" />
+                <span className="text-sm font-medium">{profile?.username}</span>
+              </div>
+
+              <Button variant="ghost" size="sm" onClick={handleSignOut}>
+                <LogOut className="w-4 h-4 mr-2" />
+                退出
+              </Button>
+            </>
+          ) : (
+            <>
+              <Link to="/login">
+                <Button variant="ghost" size="sm">
+                  登录
+                </Button>
+              </Link>
+              <Link to="/register">
+                <Button size="sm">
+                  注册
+                </Button>
+              </Link>
+            </>
+          )}
         </div>
-      </nav>
+      </div>
     </header>
   );
-};
-
-export default Header;
+}
