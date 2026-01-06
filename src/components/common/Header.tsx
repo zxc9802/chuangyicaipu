@@ -21,17 +21,18 @@ export default function Header() {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-16 items-center justify-between px-4">
-        {/* Logo */}
-        <Link to="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-          <ChefHat className="w-8 h-8 text-primary" />
-          <span className="text-xl font-bold">创意食谱</span>
-        </Link>
-
+      <div className="container flex h-16 items-center px-4">
         {/* 导航和用户信息 */}
         <div className="flex items-center gap-4">
           {user ? (
             <>
+              <Link to="/">
+                <Button variant="ghost" size="sm">
+                  <ChefHat className="w-4 h-4 mr-2" />
+                  创建食谱
+                </Button>
+              </Link>
+              
               <Link to="/history">
                 <Button variant="ghost" size="sm">
                   <History className="w-4 h-4 mr-2" />
