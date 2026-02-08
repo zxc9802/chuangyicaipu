@@ -1,99 +1,67 @@
-## 介绍
+# 创意食谱 H5
 
-项目介绍
+一款趣味性 H5 应用，用户可输入任意食材、佐料及烹饪方式，AI 将智能推断菜品味道，给出星级评分，并生成菜品成品效果图，帮助用户探索烹饪创意。
 
-## 目录结构
+## ✨ 核心功能
 
-```
-├── README.md # 说明文档
-├── components.json # 组件库配置
-├── eslint.config.js # eslint 配置
-├── index.html # 入口文件
-├── package.json # 包管理
-├── postcss.config.js # postcss 配置
-├── public # 静态资源目录
-│   ├── favicon.png # 图标
-│   └── images # 图片资源
-├── src # 源码目录
-│   ├── App.tsx # 入口文件
-│   ├── components # 组件目录
-│   ├── context # 上下文目录
-│   ├── db # 数据库配置目录
-│   ├── hooks # 通用钩子函数目录
-│   ├── index.css # 全局样式
-│   ├── layout # 布局目录
-│   ├── lib # 工具库目录
-│   ├── main.tsx # 入口文件
-│   ├── routes.tsx # 路由配置
-│   ├── pages # 页面目录
-│   ├── services  # 数据库交互目录
-│   ├── types   # 类型定义目录
-├── tsconfig.app.json  # ts 前端配置文件
-├── tsconfig.json # ts 配置文件
-├── tsconfig.node.json # ts node端配置文件
-└── vite.config.ts # vite 配置文件
-```
+### 🔐 用户系统
+- 手机号注册/登录
+- 个人中心管理
+- 历史记录查看
 
-## 技术栈
+### 🥗 食材输入
+- 支持多种食材输入
+- 佐料及用量添加（如盐 5 克、酱油 10 毫升）
+- 烹饪方式选择（炒、煮、炸、蒸、烤等）
 
-Vite、TypeScript、React、Supabase
+### 🤖 AI 智能分析
+- 推断菜品味道（鲜香微辣、酸甜可口等）
+- 多维度综合评价（口味搭配、营养均衡、创意指数）
+- 1-5 星级评分
 
-## 本地开发
+### 🎨 成品图生成
+- AI 自动生成菜品效果图
+- 根据星级调整风格：
+  - ⭐⭐⭐⭐⭐ 精致摆盘
+  - ⭐⭐⭐ 简洁摆盘
+  - ⭐⭐ 抽象动漫风格
 
-### 如何在本地编辑代码？
+### 📋 历史记录
+- 自动保存创作记录
+- 支持查看详情和删除
 
-您可以选择 [VSCode](https://code.visualstudio.com/Download) 或者您常用的任何 IDE 编辑器，唯一的要求是安装 Node.js 和 npm.
+### 📸 打卡分享
+- 一键生成打卡图片
+- 包含食材、佐料、评价及成品图
+- 支持下载分享
 
-### 环境要求
+## 🎨 设计风格
 
-```
-# Node.js ≥ 20
-# npm ≥ 10
-例如：
-# node -v   # v20.18.3
-# npm -v    # 10.8.2
-```
+| 元素 | 说明 |
+|------|------|
+| 主色调 | 暖橙色 #FF8C42 |
+| 背景色 | 奶白色 #FFF8F0 |
+| 文字色 | 深灰色 #333333 |
+| 交互 | 卡片圆角 8px，轻微阴影，手绘风格图标 |
 
-具体安装步骤如下：
+## 🛠️ 技术栈
 
-### 在 Windows 上安装 Node.js
+- **前端框架**: React + TypeScript
+- **构建工具**: Vite
+- **样式方案**: TailwindCSS
+- **后端服务**: Supabase
+- **AI 能力**: 大模型文本分析 + AI 绘图
 
-```
-# Step 1: 访问Node.js官网：https://nodejs.org/，点击下载后，会根据你的系统自动选择合适的版本（32位或64位）。
-# Step 2: 运行安装程序：下载完成后，双击运行安装程序。
-# Step 3: 完成安装：按照安装向导完成安装过程。
-# Step 4: 验证安装：在命令提示符（cmd）或IDE终端（terminal）中输入 node -v 和 npm -v 来检查 Node.js 和 npm 是否正确安装。
+## 🚀 快速开始
+
+```bash
+# 安装依赖
+pnpm install
+
+# 启动开发服务器
+pnpm dev
 ```
 
-### 在 macOS 上安装 Node.js
+## 📄 License
 
-```
-# Step 1: 使用Homebrew安装（推荐方法）：打开终端。输入命令brew install node并回车。如果尚未安装Homebrew，需要先安装Homebrew，
-可以通过在终端中运行如下命令来安装：
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-或者使用官网安装程序：访问Node.js官网。下载macOS的.pkg安装包。打开下载的.pkg文件，按照提示完成安装。
-# Step 2: 验证安装：在命令提示符（cmd）或IDE终端（terminal）中输入 node -v 和 npm -v 来检查 Node.js 和 npm 是否正确安装。
-```
-
-### 安装完后按照如下步骤操作：
-
-```
-# Step 1: 下载代码包
-# Step 2: 解压代码包
-# Step 3: 用IDE打开代码包，进入代码目录
-# Step 4: IDE终端输入命令行，安装依赖：npm i
-# Step 5: IDE终端输入命令行，启动开发服务器：npm run dev -- --host 127.0.0.1
-```
-
-### 如何开发后端服务？
-
-配置环境变量，安装相关依赖
-如需使用数据库，请使用 supabase 官方版本或自行部署开源版本的 Supabase
-
-### 如何配置应用中的三方 API？
-
-具体三方 API 调用方法，请参考帮助文档：[源码导出](https://cloud.baidu.com/doc/MIAODA/s/Xmewgmsq7)，了解更多详细内容。
-
-## 了解更多
-
-您也可以查看帮助文档：[源码导出](https://cloud.baidu.com/doc/MIAODA/s/Xmewgmsq7)，了解更多详细内容。
+MIT
